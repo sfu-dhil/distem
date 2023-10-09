@@ -1,0 +1,46 @@
+@import '@bcgov/bc-sans/css/BCSans.css';
+@import '@fontsource-variable/noto-sans-canadian-aboriginal';
+
+body{
+    font-family: 'Noto Sans Canadian Aboriginal Variable', "BCSans", Helvetica, sans-serif
+}
+
+*{
+    box-sizing: border-box;
+}
+
+main, div, body{
+    padding:0;
+    margin:0;
+}
+
+body{
+    display:grid;
+    grid-template-columns: 1fr 6fr;
+    gap: 2rem;
+    height:100vh;
+    overflow-y:hidden;
+}
+
+body > *{
+    height:100%;
+    width:100%;
+}
+
+aside{
+    overflow-y:auto;
+    background: #efefef;
+}
+
+main{
+}
+
+#viz{
+    height:100%;
+    width:100%;
+}
+
+
+path{
+    transition: fill-opacity 0.2s ease-in-out;
+}
