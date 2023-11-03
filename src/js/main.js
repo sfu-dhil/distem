@@ -14,26 +14,6 @@ const activateModal = (content) => {
 };
 
 class CircleChart {
-  /*   get arcGenerator() {
-    const { radii } = this;
-    return d3
-      .arc()
-      .innerRadius((_, i) => radii[i])
-      .outerRadius((_, i) => radii[i] + 1)
-      .startAngle(-Math.PI)
-      .endAngle(Math.PI);
-  } */
-
-  arcGenerator2(cx, cy, r) {
-    console.log(r);
-    /*     return `M ${cx} ${cy} 
-     m ${-1 * r}, 0
-     a ${r}, ${r} 0 1,1 ${r * 2},0
-     a ${r}, ${r} -90 1,1 ${r * -2},0`; */
-
-    return;
-  }
-
   get color() {
     return d3.quantize(d3.interpolateHcl("#60c96e", "#4d4193"), this.data.length);
   }
