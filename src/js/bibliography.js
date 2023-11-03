@@ -1,3 +1,9 @@
+/**
+ * Citation Style Language files (in .locale/ and in ./csl) are courtesy of the Citation Style Language project: CitationStyles.org . See individual files
+ * for authorship and translators.
+ *
+ */
+
 import LOCALE_EN_US from "./locale/locale-en-US.xml?raw";
 import CSL from "citeproc";
 
@@ -30,7 +36,7 @@ export default class Bibliography {
     const citeproc = new CSL.Engine(
       {
         retrieveLocale: () => LOCALE_EN_US,
-        retrieveItem: this.retrieveItem.bind(self),
+        retrieveItem: this.retrieveItem.bind(self)
       },
       STYLES[style]
     );

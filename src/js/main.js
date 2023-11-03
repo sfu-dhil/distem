@@ -35,10 +35,7 @@ class CircleChart {
   }
 
   get color() {
-    return d3.quantize(
-      d3.interpolateHcl("#60c96e", "#4d4193"),
-      this.data.length
-    );
+    return d3.quantize(d3.interpolateHcl("#60c96e", "#4d4193"), this.data.length);
   }
 
   get radius() {
@@ -61,7 +58,7 @@ class CircleChart {
   get dimensions() {
     return {
       width: viz.clientWidth,
-      height: viz.clientHeight,
+      height: viz.clientHeight
     };
   }
   setData(data) {
@@ -80,16 +77,15 @@ class CircleChart {
         0,
         (el) => {
           console.log(el);
-          const pathLength =
-            parseFloat(el.getAttribute("data-r")) * Math.PI * 2;
+          const pathLength = parseFloat(el.getAttribute("data-r")) * Math.PI * 2;
           el.setAttribute("stroke-dasharray", pathLength);
           return pathLength;
-        },
-      ],
+        }
+      ]
       //duration: this.data.length * 10000,
     };
     const opacity = {
-      value: [1, 0],
+      value: [1, 0]
     };
     if (reverse) {
       strokeDashoffset.value.reverse();
@@ -98,20 +94,20 @@ class CircleChart {
     return anime
       .timeline({
         easing: "cubicBezier(.28,.94,1,.99)",
-        loop: false,
+        loop: false
       })
       .add({
         targets: "path",
         opacity: {
-          value: reverse ? [0.3, 1] : [1, 0.3],
+          value: reverse ? [0.3, 1] : [1, 0.3]
         },
-        strokeDashoffset,
+        strokeDashoffset
       })
       .add(
         {
           targets: "text",
           opacity,
-          duration: this.data.length * 20,
+          duration: this.data.length * 20
         },
         100
       );
@@ -139,14 +135,10 @@ class CircleChart {
         };
         const totalItems = (collection, i = 0) => {
           const itemCount = collection.items.length;
-          const collectionCount = getSum(
-            collection.collections.map(totalItems)
-          );
+          const collectionCount = getSum(collection.collections.map(totalItems));
           return i + itemCount + collectionCount;
         };
-        return `${title} (c: ${collections.length}; i: ${
-          items.length
-        }; ti: ${totalItems(data)})`;
+        return `${title} (c: ${collections.length}; i: ${items.length}; ti: ${totalItems(data)})`;
       });
   }
 
@@ -162,10 +154,7 @@ class CircleChart {
       children.remove();
     }
     // Update hieght width viewbox
-    svg
-      .attr("height", height)
-      .attr("width", width)
-      .attr("viewBox", `0 0 ${height} ${width}`);
+    svg.attr("height", height).attr("width", width).attr("viewBox", `0 0 ${height} ${width}`);
     const g = this.svg.append("g");
     // Create the rings
     const rings = g.selectAll("path").data(data);
@@ -182,6 +171,7 @@ class CircleChart {
       .attr("fill", "none")
       .attr("id", (_, idx) => `cat_${idx}`)
       .attr("data-r", (_, idx) => radii[idx])
+      // This is where we're drawing a circle path
       .attr("d", (_, idx) => {
         const r = radii[idx];
         return `M 0 0
@@ -216,7 +206,7 @@ class CircleChart {
       .zoom()
       .extent([
         [0, 0],
-        [height, width],
+        [height, width]
       ])
       .scaleExtent([0.1, 8])
       .on("zoom", ({ transform }) => {
