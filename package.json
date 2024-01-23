@@ -16,7 +16,7 @@
     "eslint-config-prettier": "^8.8.0",
     "sass": "^1.68.0",
     "prettier": "^3.0.0",
-    "vite": "^4.4.12",
+    "vite": "^4.5.2",
     "zotero-api-client": "^0.43.1"
   },
   "dependencies": {
