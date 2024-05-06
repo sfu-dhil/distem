@@ -1,0 +1,70 @@
+@import "@bcgov/bc-sans/css/BCSans.css";
+@import "@fontsource-variable/noto-sans-canadian-aboriginal";
+@import "bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+:root {
+  font-family: 'Noto Sans Canadian Aboriginal Variable', "BCSans", Helvetica, sans-serif !important;
+
+  /* bootstrap defaults */
+  --bs-font-sans-serif: 'Noto Sans Canadian Aboriginal Variable', "BCSans", Helvetica, sans-serif ;
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-font-monospace: 'Noto Sans Canadian Aboriginal Variable', "BCSans", Helvetica, sans-serif ;
+}
+
+html, body {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+#app {
+  height: 100vh;
+  width: 100vw;
+}
+
+aside{
+  overflow-y:auto;
+  position: fixed;
+  max-width: 15vw;
+  width: 100%;
+}
+
+.list-group {
+  padding: 0;
+
+  > .list-group {
+    margin-left: 0.5em;
+  }
+}
+
+.cover-image {
+  max-width: 200px;
+}
+
+.show-more-content {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  cursor: pointer;
+  text-overflow: ellipsis;
+
+  * {
+      display: inline;
+  }
+}
+
+svg {
+  path.ring, circle.satellite {
+    cursor: pointer;
+  }
+
+  text.label {
+    pointer-events: none;
+
+    textPath {
+      text-anchor: middle;
+    }
+  }
+}
