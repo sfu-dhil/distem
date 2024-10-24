@@ -33,5 +33,5 @@ export default function getBibliography(items, style='APA7') {
   citeproc.updateItems([...citations.keys()])
   const result = citeproc.makeBibliography()
 
-  return result[1].join("")
+  return result[1]
 }

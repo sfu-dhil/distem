@@ -2,6 +2,8 @@
 @import "@fontsource-variable/noto-sans-canadian-aboriginal";
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+@import "@fortawesome/fontawesome-free/css/fontawesome.min.css";
+@import "@fortawesome/fontawesome-free/css/solid.min.css";
 
 :root {
   font-family: 'Noto Sans Canadian Aboriginal Variable', "BCSans", Helvetica, sans-serif !important;
@@ -15,7 +17,6 @@
 html, body {
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
 }
 
 #app {
@@ -23,48 +24,17 @@ html, body {
   width: 100vw;
 }
 
-aside{
-  overflow-y: auto;
-  position: fixed;
-  max-width: 15vw;
-  width: 100%;
-}
-
-.list-group {
-  padding: 0;
-
-  > .list-group {
-    margin-left: 0.5em;
-  }
-}
-
-.cover-image {
-  max-width: 200px;
-}
-
-.show-more-content {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  cursor: pointer;
-  text-overflow: ellipsis;
-
-  * {
-      display: inline;
-  }
-}
-
-svg {
-  path.ring, circle.satellite {
-    cursor: pointer;
-  }
-
-  text.label {
-    pointer-events: none;
-
-    textPath {
-      text-anchor: middle;
-    }
-  }
+a[href^="http://"]::after, a[href^="https://"]::after {
+  content: "\F1C5";
+  display: inline-block;
+  font-family: bootstrap-icons !important;
+  font-style: normal;
+  font-weight: normal !important;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: -.125em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-left: 0.5ex;
 }

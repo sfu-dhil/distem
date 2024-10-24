@@ -1,28 +1,38 @@
 <script setup>
+import { useTemplateRef, onMounted, computed, watch, nextTick } from 'vue'
+import { storeToRefs } from 'pinia'
 import * as d3 from "d3"
 import anime from "animejs/lib/anime.es.js"
-import useAppState from '../composables/useAppState'
-import useToast from '../composables/useToast'
-import useModal from '../composables/useModal'
+import { useDisplayStore } from '../stores/display.js'
+import { useData } from '../stores/data.js'
+import { useToast } from '../stores/toast.js'
 import { Popover } from 'bootstrap'
-import { onMounted, watch, nextTick } from 'vue'
 
+const displayStore = useDisplayStore()
 const {
-  selected, animating, generateId
-} = useAppState()
+  collectionAnimating,
+  selectedCollectionKey,
+} = storeToRefs(displayStore)
 const {
-  addToast,
+  collectionMap,
+} = useData()
+const {
+  addMissingContentToast,
 } = useToast()
-const {
-  showBibliographyModal,
-  showItemDetailsModal,
-} = useModal()
 
+const svgEl = useTemplateRef('svg-el')
+const gRootEl = useTemplateRef('g-root-el')
+const width = defineModel('width')
+const height = defineModel('height')
 
-const svg_id = generateId('d3_chart')
-const g_id = generateId('d3_chart_container')
-let width = document.querySelector("#app").clientWidth
-let height = document.querySelector("#app").clientHeight
+const selected = computed({
+  get() {
+    return collectionMap.get(selectedCollectionKey.value)
+  },
+  set(collection) {
+    selectedCollectionKey.value = collection.key
+  }
+})
 
 const chunkWords = (string, chunkLength) => {
   const words = string.trim().split(/\s+/)
@@ -55,8 +65,8 @@ const animate = (reverse = false) => {
     .timeline({
       easing: "cubicBezier(.28, .94, 1, .99)",
       loop: false,
-      begin: () => { animating.value = true },
-      complete: () => { animating.value = false },
+      begin: () => { collectionAnimating.value = true },
+      complete: () => { collectionAnimating.value = false },
     })
     .add({
       targets: "path",
@@ -79,20 +89,16 @@ const animate = (reverse = false) => {
 }
 
 const updateSVG = async () => {
-  width = document.querySelector("#app").clientWidth
-  height = document.querySelector("#app").clientHeight
-
-  const svg = d3.select(`#${svg_id}`)
-    .attr("viewBox", `0 0 ${height} ${width}`)
-
-  const g = d3.select(`#${g_id}`)
+  const svg = d3.select(svgEl.value)
+    .attr("viewBox", `0 0 ${height.value} ${width.value}`)
+  const g = d3.select(gRootEl.value)
 
   // Create a zoom handler
   const zoom = d3
     .zoom()
     .extent([
       [0, 0],
-      [height, width]
+      [height.value, width.value]
     ])
     .scaleExtent([0.1, 8])
     .on("zoom", ({ transform }) => {
@@ -102,7 +108,7 @@ const updateSVG = async () => {
   // And put it on the zoom thing
   svg.call(zoom)
   svg.call(zoom.transform, d3.zoomIdentity)
-  svg.call(zoom.translateBy, height / 2, width / 2)
+  svg.call(zoom.translateBy, height.value / 2, width.value / 2)
 
   const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
   const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new Popover(popoverTriggerEl))
@@ -110,7 +116,7 @@ const updateSVG = async () => {
   await animate(true).finished
 }
 
-watch(selected, (newSelected, oldSelected) => {
+watch(selectedCollectionKey, (newSelected, oldSelected) => {
   if (newSelected !== oldSelected) {
     nextTick(() => {
       updateSVG()
@@ -130,12 +136,12 @@ const getArcPath = r =>`M 0 0
   a ${r}, ${r} 0 0, 1 0, ${r * 2}
 `
 const getRadius = () => {
-  return width / ((selected.value.collections.length + 1) * 2 + 1)
+  return width.value / ((selected.value.collections.length + 1) * 2 + 1)
 }
 const decorateCollections = (collections) => {
   const colors = d3.quantize(d3.interpolateHcl("#60c96e", "#4d4193"), collections.length + 1)
   const radius = getRadius()
-  const radiis = d3.range(radius, (width / 2), radius).reverse()
+  const radiis = d3.range(radius, (width.value / 2), radius).reverse()
 
   const totalItems = collections.reduce( (total, collection) => total+=collection.items.length, 0)
   const orbitColors = d3.scaleSequential().domain([1, totalItems]).interpolator(d3.interpolateViridis)
@@ -181,16 +187,14 @@ const ringClick = (collection) => {
   if (collections.length > 0) {
     changeSelected(collection)
   } else if (items.length > 0) {
-    showBibliographyModal(items)
+    displayStore.showBibliography(collection.key)
   } else {
-    addToast({
-      content: `No items for ${title}`,
-      error: true,
-    })
+    addMissingContentToast()
   }
 }
 const centerCircleClick = () => {
-  const parent = selected.value.parent
+  const parentKey = selected.value.parentKey
+  const parent = collectionMap.get(parentKey)
   if (parent) {
     changeSelected(parent)
   }
@@ -199,16 +203,17 @@ const updateAttribute = (event, attribute, value) => {
   event.target.setAttribute(attribute, value)
 }
 const pauseAnimations = () => {
-  document.querySelector(`#${svg_id}`).pauseAnimations()
+  svgEl.value.pauseAnimations()
 }
 const unpauseAnimations = () => {
-  document.querySelector(`#${svg_id}`).unpauseAnimations()
+  svgEl.value.unpauseAnimations()
 }
 </script>
 
+<!-- v-if="selected.collections && selected.collections.length > 0" -->
 <template>
-  <svg :id="svg_id" height="100%" width="100%" :viewBox="`0 0 ${height} ${width}`">
-    <g :id="g_id" v-if="selected.collections && selected.collections.length > 0">
+  <svg ref="svg-el" height="100%" width="100%" :viewBox="`0 0 ${height} ${width}`">
+    <g ref="g-root-el">
       <g v-for="(collection, collectionIndex) in decorateCollections(selected.collections.slice().reverse())">
         <!-- white background -->
         <path stroke="#fff" stroke-opacity="1.0" :stroke-width="collection.ui.radius"
@@ -228,7 +233,7 @@ const unpauseAnimations = () => {
                 x="0" :cy="item.ui.radii" :r="item.ui.radius"
                 :fill="item.ui.color" fill-opacity="0.5" :title="item.shortTitle ? item.shortTitle : item.title"
                 data-bs-toggle="popover" data-bs-trigger="hover"
-                @click="showItemDetailsModal(item)"
+                @click="() => displayStore.showItemDetail(item.id)"
                 @mouseover="updateAttribute($event, 'fill-opacity', 1); pauseAnimations()"
                 @mouseout="updateAttribute($event, 'fill-opacity', 0.5); unpauseAnimations()"
         >
@@ -266,3 +271,20 @@ const unpauseAnimations = () => {
     </g>
   </svg>
 </template>
+
+
+<style lang="scss" scoped>
+svg {
+  path.ring, circle.satellite {
+    cursor: pointer;
+  }
+
+  text.label {
+    pointer-events: none;
+
+    textPath {
+      text-anchor: middle;
+    }
+  }
+}
+</style>

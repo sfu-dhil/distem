@@ -73,7 +73,9 @@ class Collection {
       if (item.ISBN) {
         const coverImage = await getCoverImage(item.ISBN)
         if (coverImage) {
-          item.coverImage = coverImage
+          // https://vite.dev/guide/assets#the-public-directory
+          // never start the urls with `public/whatever`. just use `/whatever`
+          item.coverImage = coverImage.replace('public/', '/')
         }
       }
     }
